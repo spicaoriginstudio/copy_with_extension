@@ -61,7 +61,7 @@ Make sure that you set the part file as shown in the example above: `part 'your_
 dart run build_runner build
 ```
 
-In Flutter projects, `flutter pub run build_runner build` also works.
+In Flutter projects, run the same command from the package root.
 
 #### Use
 
