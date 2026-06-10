@@ -16,13 +16,13 @@ String copyWithValuesTemplate(
 
   // Generate the parameters passed to the constructor when creating the new
   // instance. Immutable fields are copied from the existing value.
-  final paramsInput = spec.constructorFields
-      .map((field) => _constructorArg(field))
-      .join(' ');
+  final paramsInput =
+      spec.constructorFields.map((field) => _constructorArg(field)).join(' ');
 
-  final constructorBody =
-      isAbstract
-          ? ''
+  final constructorBody = isAbstract
+      ? ''
+      : spec.generatesTrackChanges
+          ? _trackChangesConstructorBody(spec, paramsInput)
           : '{ return ${spec.constructorReference}($paramsInput); }';
   final callParameters =
       constructorInput.trim().isEmpty ? '' : '{$constructorInput}';
@@ -60,4 +60,27 @@ String _constructorArg(ResolvedCopyWithField field) {
         ? _value.${field.name}
         // ignore: cast_nullable_to_non_nullable
         : ${field.name} as ${field.type},''';
+}
+
+String _trackChangesConstructorBody(
+  ResolvedCopyWithSpec spec,
+  String paramsInput,
+) {
+  final changedFieldLines = spec.uniqueMutableFields
+      .map(
+        (field) =>
+            "if (${field.name} != const \$CopyWithPlaceholder()) '${field.name}',",
+      )
+      .join('\n            ');
+
+  return '''{
+          final newInstance = ${spec.constructorReference}($paramsInput);
+          final currentChanges = ${spec.changedFieldsStorageName}[_value] ?? <String>{};
+          final newChanges = <String>{
+            ...currentChanges,
+            $changedFieldLines
+          };
+          ${spec.changedFieldsStorageName}[newInstance] = newChanges;
+          return newInstance;
+        }''';
 }

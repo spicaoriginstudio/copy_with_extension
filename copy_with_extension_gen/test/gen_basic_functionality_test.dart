@@ -29,7 +29,7 @@ class CopyWithProxy {
 @CopyWith()
 class CopyWithRenamedImmutable {
   const CopyWithRenamedImmutable({required int seed, required this.label})
-    : immutable = seed;
+      : immutable = seed;
 
   @CopyWithField(immutable: true)
   final int immutable;
@@ -42,6 +42,14 @@ class CopyWithProxyChaining {
 
   final String? id;
   final String? field;
+}
+
+@CopyWith(trackChanges: true)
+class CopyWithTrackChanges with _$CopyWithTrackChangesTrackChangesMixin {
+  const CopyWithTrackChanges({required this.id, this.name});
+
+  final String id;
+  final String? name;
 }
 
 @CopyWith()
@@ -142,13 +150,33 @@ void main() {
 
   group('CopyWithProxyChaining', () {
     test('multiple proxy calls update fields', () {
-      final result = const CopyWithProxyChaining().copyWith
+      final result = const CopyWithProxyChaining()
+          .copyWith
           .id('test')
           .copyWith
           .field('testField');
 
       expect(result.id, 'test');
       expect(result.field, 'testField');
+    });
+  });
+
+  group('CopyWithTrackChanges', () {
+    test('tracks fields updated through copyWith', () {
+      const original = CopyWithTrackChanges(id: '1', name: 'old');
+      final updated = original.copyWith(name: 'new');
+
+      expect(updated.hasChanges, isTrue);
+      expect(updated.changedFields, <String>{'name'});
+      expect(updated.getChanges(), <String, dynamic>{'name': 'new'});
+    });
+
+    test('accumulates changed fields across chained copies', () {
+      const original = CopyWithTrackChanges(id: '1', name: 'old');
+      final updated = original.copyWith(name: 'new').copyWith(id: '2');
+
+      expect(updated.changedFields, <String>{'name', 'id'});
+      expect(updated.getChanges(), <String, dynamic>{'name': 'new', 'id': '2'});
     });
   });
 

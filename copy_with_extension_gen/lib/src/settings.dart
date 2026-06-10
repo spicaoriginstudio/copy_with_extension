@@ -4,11 +4,11 @@ class Settings {
     required this.copyWithNull,
     required this.skipFields,
     required this.immutableFields,
+    this.trackChanges = false,
     Set<String>? annotations,
-  }) : annotations =
-           (annotations ?? defaultAnnotations)
-               .map((e) => e.toLowerCase())
-               .toSet();
+  }) : annotations = (annotations ?? defaultAnnotations)
+            .map((e) => e.toLowerCase())
+            .toSet();
 
   /// Creates [Settings] from a configuration map, typically coming from
   /// a `build.yaml` file.
@@ -17,10 +17,9 @@ class Settings {
     if (json.containsKey('annotations')) {
       final configAnnotations = json['annotations'];
       if (configAnnotations != null) {
-        rawAnnotations =
-            (configAnnotations as List<dynamic>)
-                .map((e) => e.toString())
-                .toSet();
+        rawAnnotations = (configAnnotations as List<dynamic>)
+            .map((e) => e.toString())
+            .toSet();
       }
     }
 
@@ -28,6 +27,7 @@ class Settings {
       copyWithNull: json['copy_with_null'] as bool? ?? false,
       skipFields: json['skip_fields'] as bool? ?? false,
       immutableFields: json['immutable_fields'] as bool? ?? false,
+      trackChanges: json['track_changes'] as bool? ?? false,
       annotations: rawAnnotations,
     );
   }
@@ -35,6 +35,7 @@ class Settings {
   final bool copyWithNull;
   final bool skipFields;
   final bool immutableFields;
+  final bool trackChanges;
   final Set<String> annotations;
 
   /// Default annotation names forwarded to generated parameters.

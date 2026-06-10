@@ -11,6 +11,7 @@ class CopyWith {
     this.skipFields,
     this.constructor,
     this.immutableFields,
+    this.trackChanges,
   });
 
   /// Set `copyWithNull` to `true` if you want to use `copyWithNull` function that allows you to nullify the fields. E.g. `myInstance.copyWithNull(id: true, name: true)`. Default is `false`.
@@ -26,6 +27,10 @@ class CopyWith {
   /// Fields can still opt out using `@CopyWithField(immutable: false)`.
   /// Defaults to `false`.
   final bool? immutableFields;
+
+  /// Tracks which fields were changed by generated `copyWith` calls.
+  /// Defaults to `false`.
+  final bool? trackChanges;
 }
 
 /// Field related options for the class's `CopyWith` annotation.
