@@ -17,6 +17,13 @@ class CopyWithValuesOptional {
   final String? id;
 }
 
+@CopyWith(copyWithNull: true, copyWithName: '_copyWith')
+class CopyWithPrivateName {
+  const CopyWithPrivateName({this.id});
+
+  final String? id;
+}
+
 @CopyWith()
 class CopyWithProxy {
   const CopyWithProxy({this.id, this.immutable});
@@ -29,7 +36,7 @@ class CopyWithProxy {
 @CopyWith()
 class CopyWithRenamedImmutable {
   const CopyWithRenamedImmutable({required int seed, required this.label})
-      : immutable = seed;
+    : immutable = seed;
 
   @CopyWithField(immutable: true)
   final int immutable;
@@ -111,6 +118,28 @@ void main() {
     });
   });
 
+  group('CopyWithPrivateName', () {
+    test('uses custom private entrypoint name', () {
+      expect(const CopyWithPrivateName()._copyWith(id: 'test').id, 'test');
+    });
+
+    test('uses custom private null entrypoint name', () {
+      expect(
+        const CopyWithPrivateName(id: 'test')._copyWithNull(id: true).id,
+        null,
+      );
+    });
+
+    test('does not expose default copyWith getter', () {
+      final dynamic instance = const CopyWithPrivateName(id: 'test');
+
+      expect(
+        () => instance.copyWith(id: 'next'),
+        throwsA(isA<NoSuchMethodError>()),
+      );
+    });
+  });
+
   group('CopyWithProxy', () {
     test('proxy updates field', () {
       expect(const CopyWithProxy().copyWith.id('test').id, 'test');
@@ -150,8 +179,7 @@ void main() {
 
   group('CopyWithProxyChaining', () {
     test('multiple proxy calls update fields', () {
-      final result = const CopyWithProxyChaining()
-          .copyWith
+      final result = const CopyWithProxyChaining().copyWith
           .id('test')
           .copyWith
           .field('testField');

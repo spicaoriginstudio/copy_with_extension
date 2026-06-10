@@ -14,6 +14,7 @@ class AnnotationUtils {
     final generateCopyWithNull = reader.peek('copyWithNull')?.boolValue;
     final skipFields = reader.peek('skipFields')?.boolValue;
     final constructor = reader.peek('constructor')?.stringValue;
+    final copyWithName = reader.peek('copyWithName')?.stringValue;
     final immutableFields = reader.peek('immutableFields')?.boolValue;
     final trackChanges = reader.peek('trackChanges')?.boolValue;
 
@@ -21,6 +22,7 @@ class AnnotationUtils {
       copyWithNull: generateCopyWithNull ?? settings.copyWithNull,
       skipFields: skipFields ?? settings.skipFields,
       constructor: constructor,
+      copyWithName: copyWithName ?? 'copyWith',
       immutableFields: immutableFields ?? settings.immutableFields,
       trackChanges: trackChanges ?? settings.trackChanges,
     );

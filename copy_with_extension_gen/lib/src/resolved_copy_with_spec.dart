@@ -42,13 +42,15 @@ class CopyWithGenerationContext {
     superInfo = await _validateSuperFields(superInfo, fields);
     _validateFieldNullability(fields);
 
-    final shouldExtendSuperProxy = superInfo != null &&
+    final shouldExtendSuperProxy =
+        superInfo != null &&
         superInfo.element.library == superInfo.originLibrary;
     final resolvedFields = fields
         .map(
           (field) => ResolvedCopyWithField.from(
             field,
-            delegatesToSuper: shouldExtendSuperProxy &&
+            delegatesToSuper:
+                shouldExtendSuperProxy &&
                 field.isInherited &&
                 hasNonSkippedFieldProxy(field.classField, settings),
           ),
@@ -72,8 +74,10 @@ class CopyWithGenerationContext {
       ),
       constructorName: result.constructorName,
       skipFields: annotation.skipFields,
+      copyWithMethodName: annotation.copyWithName,
       generatesTrackChanges: annotation.trackChanges,
-      generatesCopyWithNull: annotation.copyWithNull ||
+      generatesCopyWithNull:
+          annotation.copyWithNull ||
           (superInfo?.annotation.copyWithNull == true &&
               categorized.uniqueNullableMutableFields.isNotEmpty),
       superInfo: superInfo,
@@ -109,10 +113,11 @@ class CopyWithGenerationContext {
           immutableDefault: superInfo.annotation.immutableFields,
         ),
       );
-      final superFields = superResult.fields
-          .where((field) => !field.fieldAnnotation.immutable)
-          .map((field) => field.name)
-          .toSet();
+      final superFields =
+          superResult.fields
+              .where((field) => !field.fieldAnnotation.immutable)
+              .map((field) => field.name)
+              .toSet();
       final fieldNames = fields.map((field) => field.name).toSet();
       if (!fieldNames.containsAll(superFields)) {
         return null;
@@ -185,9 +190,10 @@ class ResolvedCopyWithField {
   /// explicitly supplied by the caller. Non-nullable fields include an
   /// additional `|| $name == null` guard so that passing `null` for a
   /// non-nullable parameter is treated as "not supplied".
-  String get placeholderCheckExpression => nullable
-      ? '$name == const \$CopyWithPlaceholder()'
-      : '$name == const \$CopyWithPlaceholder() || $name == null';
+  String get placeholderCheckExpression =>
+      nullable
+          ? '$name == const \$CopyWithPlaceholder()'
+          : '$name == const \$CopyWithPlaceholder() || $name == null';
 
   /// Metadata annotations formatted as a prefix for generated parameters.
   /// Returns an empty string when there are no annotations.
@@ -209,6 +215,7 @@ class ResolvedCopyWithSpec {
     required this.typeParametersNames,
     required this.constructorName,
     required this.skipFields,
+    required this.copyWithMethodName,
     required this.generatesTrackChanges,
     required this.generatesCopyWithNull,
     required this.superInfo,
@@ -218,19 +225,19 @@ class ResolvedCopyWithSpec {
     required List<ResolvedCopyWithField> uniqueMutableFields,
     required List<ResolvedCopyWithField> uniqueNullableMutableFields,
     required List<ResolvedCopyWithField> proxyMethodFields,
-  })  : constructorFields = List<ResolvedCopyWithField>.unmodifiable(
-          constructorFields,
-        ),
-        uniqueFields = List<ResolvedCopyWithField>.unmodifiable(uniqueFields),
-        uniqueMutableFields = List<ResolvedCopyWithField>.unmodifiable(
-          uniqueMutableFields,
-        ),
-        uniqueNullableMutableFields = List<ResolvedCopyWithField>.unmodifiable(
-          uniqueNullableMutableFields,
-        ),
-        proxyMethodFields = List<ResolvedCopyWithField>.unmodifiable(
-          proxyMethodFields,
-        );
+  }) : constructorFields = List<ResolvedCopyWithField>.unmodifiable(
+         constructorFields,
+       ),
+       uniqueFields = List<ResolvedCopyWithField>.unmodifiable(uniqueFields),
+       uniqueMutableFields = List<ResolvedCopyWithField>.unmodifiable(
+         uniqueMutableFields,
+       ),
+       uniqueNullableMutableFields = List<ResolvedCopyWithField>.unmodifiable(
+         uniqueNullableMutableFields,
+       ),
+       proxyMethodFields = List<ResolvedCopyWithField>.unmodifiable(
+         proxyMethodFields,
+       );
 
   /// Lightweight constructor for template-focused tests.
   factory ResolvedCopyWithSpec.testing({
@@ -240,6 +247,7 @@ class ResolvedCopyWithSpec {
     String? constructorName,
     bool isPrivate = false,
     bool skipFields = false,
+    String copyWithMethodName = 'copyWith',
     bool generatesTrackChanges = false,
     bool? generatesCopyWithNull,
     List<ConstructorParameterInfo> fields = const <ConstructorParameterInfo>[],
@@ -265,8 +273,10 @@ class ResolvedCopyWithSpec {
       typeParametersNames: typeParametersNames,
       constructorName: constructorName,
       skipFields: skipFields,
+      copyWithMethodName: copyWithMethodName,
       generatesTrackChanges: generatesTrackChanges,
-      generatesCopyWithNull: generatesCopyWithNull ??
+      generatesCopyWithNull:
+          generatesCopyWithNull ??
           categorized.uniqueNullableMutableFields.isNotEmpty,
       superInfo: null,
       shouldExtendSuperProxy: delegatedFieldNames.isNotEmpty,
@@ -284,6 +294,7 @@ class ResolvedCopyWithSpec {
   final String typeParametersNames;
   final String? constructorName;
   final bool skipFields;
+  final String copyWithMethodName;
   final bool generatesTrackChanges;
   final bool generatesCopyWithNull;
   final AnnotatedCopyWithSuper? superInfo;
@@ -299,9 +310,10 @@ class ResolvedCopyWithSpec {
 
   /// Fully qualified constructor invocation target, e.g. `Foo<T>` for the
   /// unnamed constructor or `Foo<T>.named` for a named constructor.
-  String get constructorReference => constructorName == null
-      ? typeAnnotation
-      : '$typeAnnotation.$constructorName';
+  String get constructorReference =>
+      constructorName == null
+          ? typeAnnotation
+          : '$typeAnnotation.$constructorName';
 
   // ── Generated type names ──────────────────────────────────────────────
 
@@ -333,6 +345,8 @@ class ResolvedCopyWithSpec {
   /// classes.
   String get extensionName =>
       '$privacyPrefix\$${className}CopyWith$typeParametersAnnotation';
+
+  String get copyWithNullMethodName => '${copyWithMethodName}Null';
 
   String get changedFieldsStorageName => '_\$${className}ChangedFields';
 
@@ -376,8 +390,9 @@ class _CategorizedFields {
       seen.putIfAbsent(field.name, () => field);
     }
     final uniqueFields = seen.values.toList(growable: false);
-    final uniqueMutableFields =
-        uniqueFields.where((field) => field.isMutable).toList(growable: false);
+    final uniqueMutableFields = uniqueFields
+        .where((field) => field.isMutable)
+        .toList(growable: false);
 
     return _CategorizedFields._(
       uniqueFields: uniqueFields,

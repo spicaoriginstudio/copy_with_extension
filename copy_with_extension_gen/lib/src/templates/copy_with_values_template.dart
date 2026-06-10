@@ -16,12 +16,14 @@ String copyWithValuesTemplate(
 
   // Generate the parameters passed to the constructor when creating the new
   // instance. Immutable fields are copied from the existing value.
-  final paramsInput =
-      spec.constructorFields.map((field) => _constructorArg(field)).join(' ');
+  final paramsInput = spec.constructorFields
+      .map((field) => _constructorArg(field))
+      .join(' ');
 
-  final constructorBody = isAbstract
-      ? ''
-      : spec.generatesTrackChanges
+  final constructorBody =
+      isAbstract
+          ? ''
+          : spec.generatesTrackChanges
           ? _trackChangesConstructorBody(spec, paramsInput)
           : '{ return ${spec.constructorReference}($paramsInput); }';
   final callParameters =
@@ -29,11 +31,11 @@ String copyWithValuesTemplate(
 
   return '''
         /// Creates a new instance with the provided field values.
-        /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored.${spec.skipFields ? '' : ' To update a single field use `${spec.typeAnnotation}(...).copyWith.fieldName(value)`.'}
+        /// Passing `null` to a nullable field nullifies it, while `null` for a non-nullable field is ignored.${spec.skipFields ? '' : ' To update a single field use `${spec.typeAnnotation}(...).${spec.copyWithMethodName}.fieldName(value)`.'}
         ///
         /// Example:
         /// ```dart
-        /// ${spec.typeAnnotation}(...).copyWith(id: 12, name: "My name")
+        /// ${spec.typeAnnotation}(...).${spec.copyWithMethodName}(id: 12, name: "My name")
         /// ```
 ${addOverride ? '        @override\n' : ''}        ${spec.typeAnnotation} call($callParameters) $constructorBody
     ''';

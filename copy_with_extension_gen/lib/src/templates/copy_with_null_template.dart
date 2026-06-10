@@ -21,16 +21,16 @@ String copyWithNullTemplate(ResolvedCopyWithSpec spec) {
 
   final description = '''
     /// Returns a copy of the object with the selected fields set to `null`.
-    /// A flag set to `false` leaves the field unchanged. Prefer `copyWith(field: null)`${spec.skipFields ? '' : ' or `copyWith.fieldName(null)` for single-field updates'}.
+    /// A flag set to `false` leaves the field unchanged. Prefer `${spec.copyWithMethodName}(field: null)`${spec.skipFields ? '' : ' or `${spec.copyWithMethodName}.fieldName(null)` for single-field updates'}.
     ///
     /// Example:
     /// ```dart
-    /// ${spec.typeAnnotation}(...).copyWithNull(firstField: true, secondField: true)
+    /// ${spec.typeAnnotation}(...).${spec.copyWithNullMethodName}(firstField: true, secondField: true)
     /// ```''';
 
   return '''
       $description
-      ${spec.typeAnnotation} copyWithNull({$nullConstructorInput}) {
+      ${spec.typeAnnotation} ${spec.copyWithNullMethodName}({$nullConstructorInput}) {
         return ${spec.constructorReference}($nullParamsInput);
       }
      ''';

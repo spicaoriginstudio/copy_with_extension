@@ -19,9 +19,9 @@ String extensionTemplate(ResolvedCopyWithSpec spec) {
 
     extension ${spec.extensionName} on ${spec.typeAnnotation} {
       /// Returns a callable class used to build a new instance with modified fields.
-      /// Example: `instanceOf${spec.className}.copyWith(...)`${spec.skipFields ? "" : " or `instanceOf${spec.className}.copyWith.fieldName(...)`"}.
+      /// Example: `instanceOf${spec.className}.${spec.copyWithMethodName}(...)`${spec.skipFields ? "" : " or `instanceOf${spec.className}.${spec.copyWithMethodName}.fieldName(...)`"}.
       // ignore: library_private_types_in_public_api
-      ${spec.proxyInterfaceRef} get copyWith => ${spec.proxyImplRef}(this);
+      ${spec.proxyInterfaceRef} get ${spec.copyWithMethodName} => ${spec.proxyImplRef}(this);
 
       $copyWithNullBlock
     }

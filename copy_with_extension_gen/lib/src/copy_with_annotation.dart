@@ -6,6 +6,7 @@ class CopyWithAnnotation implements CopyWith {
     required this.constructor,
     required this.copyWithNull,
     required this.skipFields,
+    required this.copyWithName,
     required this.immutableFields,
     required this.trackChanges,
   });
@@ -18,6 +19,9 @@ class CopyWithAnnotation implements CopyWith {
 
   @override
   final bool skipFields;
+
+  @override
+  final String copyWithName;
 
   @override
   final bool immutableFields;

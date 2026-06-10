@@ -46,8 +46,8 @@ String copyWithProxyTemplate(ResolvedCopyWithSpec spec) {
         ${copyWithValuesTemplate(spec, isAbstract: true, addOverride: spec.shouldExtendSuperProxy)};
       }
 
-      /// Callable proxy for `copyWith` functionality.
-      /// Use as `instanceOf${spec.className}.copyWith(...)`${spec.skipFields ? '' : ' or call `instanceOf${spec.className}.copyWith.fieldName(value)` for a single field'}.
+      /// Callable proxy for `${spec.copyWithMethodName}` functionality.
+      /// Use as `instanceOf${spec.className}.${spec.copyWithMethodName}(...)`${spec.skipFields ? '' : ' or call `instanceOf${spec.className}.${spec.copyWithMethodName}.fieldName(value)` for a single field'}.
       class ${spec.proxyImplName}${spec.proxyImplExtendsClause} implements ${spec.proxyInterfaceRef} {
         const ${spec.proxyImplBaseName}(${spec.shouldExtendSuperProxy ? '${spec.typeAnnotation} super._value' : 'this._value'});
 

@@ -10,6 +10,7 @@ class CopyWith {
     this.copyWithNull,
     this.skipFields,
     this.constructor,
+    this.copyWithName,
     this.immutableFields,
     this.trackChanges,
   });
@@ -22,6 +23,11 @@ class CopyWith {
 
   /// Set `constructor` if you want to use a named constructor. The generated fields will be derived from this constructor. If not set, the unnamed constructor is used.
   final String? constructor;
+
+  /// Overrides the generated copy entrypoint name.
+  /// Defaults to `copyWith`. Can be set to a private name such as `_copyWith`
+  /// to prevent external libraries from modifying the object directly.
+  final String? copyWithName;
 
   /// Treats all fields as immutable by default when set to `true`.
   /// Fields can still opt out using `@CopyWithField(immutable: false)`.
